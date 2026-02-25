@@ -183,6 +183,18 @@ body,
   line-height: 1.5;
 }
 
+.highlightBadge {
+  margin: 0 0 10px;
+  display: inline-block;
+  padding: 6px 10px;
+  border: 1px solid rgba(143, 214, 255, 0.55);
+  border-radius: 10px;
+  background: rgba(40, 130, 255, 0.15);
+  color: #bfe4ff;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 #infoFacts {
   margin: 0;
   padding-left: 18px;

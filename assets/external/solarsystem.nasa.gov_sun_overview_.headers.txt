@@ -1,0 +1,40 @@
+HTTP/2 301 
+content-type: text/html; charset=iso-8859-1
+content-length: 272
+location: https://solarsystem.nasa.gov/solar-system/sun/overview/overview/
+date: Wed, 25 Feb 2026 13:48:51 GMT
+server: Apache
+access-control-allow-origin: https://solarsystem.nasa.gov
+access-control-allow-methods: POST, GET, OPTIONS, DELETE, PUT
+access-control-max-age: 1005
+access-control-allow-headers: x-requested-with, Content-Type, origin, authorization, accept, client-security-token
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+x-frame-options: sameorigin
+x-cache: Hit from cloudfront
+via: 1.1 943eef8bcb9ae2cbd9546c9e3bf846e2.cloudfront.net (CloudFront)
+x-amz-cf-pop: SFO53-P3
+x-amz-cf-id: 9Ss-GZ_odbzLn3hApujZH7ne_3ElhcWClO8a24kfz9UzzSU9FB27WA==
+age: 344
+
+HTTP/2 404 
+content-type: text/javascript; charset=utf-8
+date: Wed, 25 Feb 2026 13:54:35 GMT
+x-frame-options: sameorigin
+status: 404 Not Found
+server: Apache
+cache-control: no-cache
+x-runtime: 0.140618
+content-security-policy: default-src 'self' https:;        font-src 'self' https: data:;        img-src 'self' https: data: blob:;        object-src 'self';        script-src 'self' https: 'unsafe-inline' 'unsafe-eval';        style-src 'self' https: 'unsafe-inline';        upgrade-insecure-requests;        frame-ancestors *
+x-request-id: b49b3343-7d70-4afd-affa-591ecc0393e2
+x-powered-by: Phusion Passenger(R)
+access-control-allow-origin: https://solarsystem.nasa.gov
+access-control-allow-methods: POST, GET, OPTIONS, DELETE, PUT
+access-control-max-age: 1005
+access-control-allow-headers: x-requested-with, Content-Type, origin, authorization, accept, client-security-token
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+vary: Accept
+x-cache: Error from cloudfront
+via: 1.1 943eef8bcb9ae2cbd9546c9e3bf846e2.cloudfront.net (CloudFront)
+x-amz-cf-pop: SFO53-P3
+x-amz-cf-id: xXn3UE_AxUcQUDaMwC2OljVnlOFTpxYt1w0Nab04mvSWAE_Zgg8Hug==
+
