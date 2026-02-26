@@ -67,7 +67,7 @@ const textures = {
   titan: loadTexture("./assets/textures/titan.png"),
 };
 
-const ORBIT_SPEED = 0.085;
+const ORBIT_SPEED = 0.16;
 const SPIN_SPEED = 0.05;
 let worldPaused = false;
 
@@ -103,6 +103,7 @@ const bodyDefinitions = [
     texture: "mercury",
     orbitRadius: 24,
     orbitalPeriodDays: 88,
+    demoOrbitPeriodDays: 70,
     rotationHours: 1407.6,
     highlight: "距离太阳最近的行星，公转最快。",
     summary: "水星是最靠近太阳的行星，昼夜温差极端。",
@@ -118,6 +119,7 @@ const bodyDefinitions = [
     texture: "venus",
     orbitRadius: 35,
     orbitalPeriodDays: 224.7,
+    demoOrbitPeriodDays: 90,
     rotationHours: -5832.5,
     highlight: "自转方向与多数行星相反，且表面温度极高。",
     summary: "金星大小接近地球，但拥有极端温室效应。",
@@ -133,6 +135,7 @@ const bodyDefinitions = [
     texture: "earth",
     orbitRadius: 46,
     orbitalPeriodDays: 365.25,
+    demoOrbitPeriodDays: 110,
     rotationHours: 23.93,
     highlight: "太阳系已知唯一拥有生命的行星。",
     summary: "地球是目前已知唯一存在稳定地表液态水并孕育生命的行星。",
@@ -148,6 +151,7 @@ const bodyDefinitions = [
     texture: "mars",
     orbitRadius: 58,
     orbitalPeriodDays: 687,
+    demoOrbitPeriodDays: 140,
     rotationHours: 24.6,
     highlight: "最像地球的岩质行星，也是人类重点探测目标。",
     summary: "火星是岩质行星，拥有稀薄大气与巨型火山地貌。",
@@ -163,6 +167,7 @@ const bodyDefinitions = [
     texture: "jupiter",
     orbitRadius: 80,
     orbitalPeriodDays: 4331,
+    demoOrbitPeriodDays: 190,
     rotationHours: 9.93,
     highlight: "太阳系最大行星，拥有极强磁场和大红斑。",
     summary: "木星是太阳系最大行星，拥有强磁场和著名的大红斑。",
@@ -178,6 +183,7 @@ const bodyDefinitions = [
     texture: "titan",
     orbitRadius: 102,
     orbitalPeriodDays: 10747,
+    demoOrbitPeriodDays: 230,
     rotationHours: 10.7,
     highlight: "拥有太阳系最显著的行星环系统。",
     summary: "土星以明亮环系著称，是典型气体巨行星。",
@@ -193,6 +199,7 @@ const bodyDefinitions = [
     texture: "uranus",
     orbitRadius: 125,
     orbitalPeriodDays: 30589,
+    demoOrbitPeriodDays: 270,
     rotationHours: -17.2,
     highlight: "自转轴几乎横躺，呈“躺着转”的独特姿态。",
     summary: "天王星是冰巨星，自转轴倾角约 98°，几乎侧躺公转。",
@@ -208,6 +215,7 @@ const bodyDefinitions = [
     texture: "neptune",
     orbitRadius: 145,
     orbitalPeriodDays: 59800,
+    demoOrbitPeriodDays: 310,
     rotationHours: 16.1,
     highlight: "八大行星中最远，拥有极端强风环境。",
     summary: "海王星是最远的已知大行星，拥有极强高空风速。",
@@ -407,10 +415,14 @@ function pickAsteroidRadius() {
 
 function buildAsteroidLayer(count, size, opacity) {
   const geometry = new THREE.IcosahedronGeometry(1, 0);
-  const material = new THREE.MeshBasicMaterial({
-    color: 0xd8d2c4,
-    transparent: false,
-    opacity: 1,
+  const material = new THREE.MeshStandardMaterial({
+    color: 0xc9c2b5,
+    roughness: 1,
+    metalness: 0,
+    emissive: 0x5f5a52,
+    emissiveIntensity: 1.05,
+    transparent: true,
+    opacity: Math.min(1, opacity + 0.08),
   });
   const mesh = new THREE.InstancedMesh(geometry, material, count);
   mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -433,9 +445,6 @@ function buildAsteroidLayer(count, size, opacity) {
 
     data.push({ radius, minorRadius, angle, speed, inclAmp, inclPhase, scale, spin, rot });
 
-    const tone = 0.8 + Math.random() * 0.2;
-    mesh.setColorAt(i, new THREE.Color(tone, tone * 0.93, tone * 0.84));
-
     dummy.position.set(Math.cos(angle) * radius, Math.sin(angle * 2 + inclPhase) * inclAmp, Math.sin(angle) * minorRadius);
     dummy.rotation.copy(rot);
     dummy.scale.setScalar(scale);
@@ -444,7 +453,6 @@ function buildAsteroidLayer(count, size, opacity) {
   }
 
   mesh.instanceMatrix.needsUpdate = true;
-  if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
   scene.add(mesh);
   return { mesh, data, dummy };
 }
@@ -599,7 +607,8 @@ function updateBodies(dt) {
 
   bodiesById.forEach((body) => {
     if (body.type !== "planet") return;
-    body.angle += (dt * ORBIT_SPEED * Math.PI * 2) / body.orbitalPeriodDays;
+    const orbitPeriod = body.demoOrbitPeriodDays || body.orbitalPeriodDays;
+    body.angle += (dt * ORBIT_SPEED * Math.PI * 2) / orbitPeriod;
     body.mesh.position.set(Math.cos(body.angle) * body.orbitRadius, 0, Math.sin(body.angle) * body.orbitRadius);
 
     const spinDir = body.rotationHours < 0 ? -1 : 1;
