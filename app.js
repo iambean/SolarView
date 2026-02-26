@@ -423,10 +423,9 @@ function updateBodies(dt) {
 
   bodiesById.forEach((body) => {
     if (body.type !== "planet") return;
-    const orbitPeriod = body.demoOrbitPeriodDays || body.orbitalPeriodDays;
     body.angle +=
-      (dt * SIMULATION_CONFIG.orbitSpeed * SIMULATION_CONFIG.planetOrbitMultiplier * Math.PI * 2) /
-      orbitPeriod;
+      (dt * SIMULATION_CONFIG.globalOrbitSpeed * Math.PI * 2) /
+      body.orbitalPeriodDays;
     body.mesh.position.set(Math.cos(body.angle) * body.orbitRadius, 0, Math.sin(body.angle) * body.orbitRadius);
 
     const spinDir = body.rotationHours < 0 ? -1 : 1;
@@ -443,7 +442,7 @@ function updateBodies(dt) {
     const orbitDir = body.orbitalPeriodDays < 0 ? -1 : 1;
     const factor = body.orbitSpeedFactor || 1;
     body.angle +=
-      (dt * SIMULATION_CONFIG.orbitSpeed * Math.PI * 2 * orbitDir * factor) /
+      (dt * SIMULATION_CONFIG.globalOrbitSpeed * Math.PI * 2 * orbitDir * factor) /
       Math.abs(body.orbitalPeriodDays);
 
     body.mesh.position.set(
@@ -464,7 +463,7 @@ function updateBodies(dt) {
     const { dummy } = layer;
     for (let i = 0; i < layer.data.length; i += 1) {
       const a = layer.data[i];
-      a.angle += dt * SIMULATION_CONFIG.orbitSpeed * 0.45 * a.speed;
+      a.angle += dt * SIMULATION_CONFIG.globalOrbitSpeed * 0.45 * a.speed;
       dummy.position.set(
         Math.cos(a.angle) * a.radius,
         Math.sin(a.angle * 2 + a.inclPhase) * a.inclAmp,

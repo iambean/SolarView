@@ -44,12 +44,10 @@ export const SCENE_CONFIG = {
 
 // 模拟运行配置
 export const SIMULATION_CONFIG = {
-  // 基础轨道运行速度 (0.16 = 相对较快的演示速度)
-  orbitSpeed: 0.16,
+  // 全局公转速度倍率（统一调快/调慢所有公转动画）
+  globalOrbitSpeed: 0.416,
   // 天体自转速度 (0.05 = 缓慢自转营造真实感)
   spinSpeed: 0.05,
-  // 行星轨道速度倍率 (2.6 = 比真实轨道快2.6倍，便于观察)
-  planetOrbitMultiplier: 2.6,
 };
 
 // 星空背景配置
@@ -138,7 +136,6 @@ export const BODY_DEFINITIONS = [
     texture: "mercury",
     orbitRadius: 24,
     orbitalPeriodDays: 88,
-    demoOrbitPeriodDays: 70,
     rotationHours: 1407.6,
     highlight: "距离太阳最近的行星，公转最快。",
     summary: "水星是最靠近太阳的行星，昼夜温差极端。",
@@ -154,7 +151,6 @@ export const BODY_DEFINITIONS = [
     texture: "venus",
     orbitRadius: 35,
     orbitalPeriodDays: 224.7,
-    demoOrbitPeriodDays: 90,
     rotationHours: -5832.5,
     highlight: "自转方向与多数行星相反，且表面温度极高。",
     summary: "金星大小接近地球，但拥有极端温室效应。",
@@ -170,7 +166,6 @@ export const BODY_DEFINITIONS = [
     texture: "earth",
     orbitRadius: 46,
     orbitalPeriodDays: 365.25,
-    demoOrbitPeriodDays: 110,
     rotationHours: 23.93,
     highlight: "太阳系已知唯一拥有生命的行星。",
     summary: "地球是目前已知唯一存在稳定地表液态水并孕育生命的行星。",
@@ -186,7 +181,6 @@ export const BODY_DEFINITIONS = [
     texture: "mars",
     orbitRadius: 54,
     orbitalPeriodDays: 687,
-    demoOrbitPeriodDays: 140,
     rotationHours: 24.6,
     highlight: "最像地球的岩质行星，也是人类重点探测目标。",
     summary: "火星是岩质行星，拥有稀薄大气与巨型火山地貌。",
@@ -202,7 +196,6 @@ export const BODY_DEFINITIONS = [
     texture: "jupiter",
     orbitRadius: 112,
     orbitalPeriodDays: 4331,
-    demoOrbitPeriodDays: 190,
     rotationHours: 9.93,
     highlight: "太阳系最大行星，拥有极强磁场和大红斑。",
     summary: "木星是太阳系最大行星，拥有强磁场和著名的大红斑。",
@@ -218,7 +211,6 @@ export const BODY_DEFINITIONS = [
     texture: "saturn",
     orbitRadius: 142,
     orbitalPeriodDays: 10747,
-    demoOrbitPeriodDays: 230,
     rotationHours: 10.7,
     highlight: "拥有太阳系最显著的行星环系统。",
     summary: "土星以明亮环系著称，是典型气体巨行星。",
@@ -234,7 +226,6 @@ export const BODY_DEFINITIONS = [
     texture: "uranus",
     orbitRadius: 176,
     orbitalPeriodDays: 30589,
-    demoOrbitPeriodDays: 270,
     rotationHours: -17.2,
     highlight: "自转轴几乎横躺，呈“躺着转”的独特姿态。",
     summary: "天王星是冰巨星，自转轴倾角约 98°，几乎侧躺公转。",
@@ -250,7 +241,6 @@ export const BODY_DEFINITIONS = [
     texture: "neptune",
     orbitRadius: 208,
     orbitalPeriodDays: 59800,
-    demoOrbitPeriodDays: 310,
     rotationHours: 16.1,
     highlight: "八大行星中最远，拥有极端强风环境。",
     summary: "海王星是最远的已知大行星，拥有极强高空风速。",
