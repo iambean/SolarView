@@ -45,7 +45,7 @@ export const SCENE_CONFIG = {
 // 模拟运行配置
 export const SIMULATION_CONFIG = {
   // 全局公转速度倍率（统一调快/调慢所有公转动画）
-  globalOrbitSpeed: 0.416,
+  globalOrbitSpeed: 8,//0.416,
   // 天体自转速度 (0.05 = 缓慢自转营造真实感)
   spinSpeed: 0.05,
 };
@@ -80,10 +80,6 @@ export const ASTEROID_BELT_CONFIG = {
     [77.2, 78.1],  // 5:2 木星共振空隙  
     [80.6, 81.3],  // 7:3 木星共振空隙
   ],
-  // 最小轨道速度 (0.14 = 相对较慢的轨道运动)
-  speedMin: 0.14,
-  // 轨道速度变化范围 (0.34 = 不同小行星速度差异)
-  speedRange: 0.34,
   // 最大轨道离心率 (0.08 = 接近圆形轨道)
   eccentricityMax: 0.08,
   // 最小轨道倾角 (0.15 = 轻微倾斜)

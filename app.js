@@ -99,6 +99,7 @@ let worldPaused = false;
 const bodiesById = new Map();
 const clickables = [];
 const orbitLines = [];
+const PLANET_IDS = ["mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune"];
 
 const orbitLineMaterial = new THREE.LineBasicMaterial({ color: 0x355788, transparent: true, opacity: 0.28 });
 
@@ -251,7 +252,6 @@ function buildAsteroidLayer(count, size, opacity) {
   for (let i = 0; i < count; i += 1) {
     const radius = pickAsteroidRadius();
     const angle = Math.random() * Math.PI * 2;
-    const speed = ASTEROID_BELT_CONFIG.speedMin + Math.random() * ASTEROID_BELT_CONFIG.speedRange;
     const eccentricity = Math.random() * ASTEROID_BELT_CONFIG.eccentricityMax;
     const minorRadius = radius * (1 - eccentricity);
     const inclAmp = ASTEROID_BELT_CONFIG.inclinationMin + Math.random() * ASTEROID_BELT_CONFIG.inclinationRange;
@@ -260,7 +260,7 @@ function buildAsteroidLayer(count, size, opacity) {
     const spin = (Math.random() - 0.5) * ASTEROID_BELT_CONFIG.spinAmplitude;
     const rot = new THREE.Euler(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
 
-    data.push({ radius, minorRadius, angle, speed, inclAmp, inclPhase, scale, spin, rot });
+    data.push({ radius, minorRadius, angle, inclAmp, inclPhase, scale, spin, rot });
 
     dummy.position.set(Math.cos(angle) * radius, Math.sin(angle * 2 + inclPhase) * inclAmp, Math.sin(angle) * minorRadius);
     dummy.rotation.copy(rot);
@@ -277,6 +277,16 @@ function buildAsteroidLayer(count, size, opacity) {
 const asteroidLayers = [
   ...ASTEROID_BELT_CONFIG.layers.map((layer) => buildAsteroidLayer(layer.count, layer.size, layer.opacity)),
 ];
+
+function getInnerPlanetAverageAngularSpeed() {
+  const rates = PLANET_IDS.map((id) => {
+    const body = bodiesById.get(id);
+    if (!body || !body.orbitalPeriodDays) return 0;
+    return (SIMULATION_CONFIG.globalOrbitSpeed * Math.PI * 2) / body.orbitalPeriodDays;
+  }).filter((v) => v > 0);
+  if (rates.length === 0) return 0;
+  return rates.reduce((sum, v) => sum + v, 0) / rates.length;
+}
 
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
@@ -459,11 +469,13 @@ function updateBodies(dt) {
   });
 
   // 2) Update asteroid-belt instanced meshes.
+  const asteroidAngularSpeed = getInnerPlanetAverageAngularSpeed();
   asteroidLayers.forEach((layer) => {
     const { dummy } = layer;
     for (let i = 0; i < layer.data.length; i += 1) {
       const a = layer.data[i];
-      a.angle += dt * SIMULATION_CONFIG.globalOrbitSpeed * 0.45 * a.speed;
+      // Use the average angular speed of all 8 planets.
+      a.angle += dt * asteroidAngularSpeed;
       dummy.position.set(
         Math.cos(a.angle) * a.radius,
         Math.sin(a.angle * 2 + a.inclPhase) * a.inclAmp,
