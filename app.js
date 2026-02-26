@@ -387,7 +387,7 @@ if (saturn) {
   saturn.mesh.add(ring);
 }
 
-const starCount = 6000;
+const starCount = 2200;
 const starPos = new Float32Array(starCount * 3);
 for (let i = 0; i < starCount; i += 1) {
   const r = 1800 * (0.35 + Math.random() * 0.9);
@@ -399,7 +399,19 @@ for (let i = 0; i < starCount; i += 1) {
 }
 const starGeo = new THREE.BufferGeometry();
 starGeo.setAttribute("position", new THREE.BufferAttribute(starPos, 3));
-scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xcde0ff, size: 1.2, sizeAttenuation: true })));
+scene.add(
+  new THREE.Points(
+    starGeo,
+    new THREE.PointsMaterial({
+      color: 0x9ab6dd,
+      size: 0.85,
+      sizeAttenuation: true,
+      transparent: true,
+      opacity: 0.55,
+      depthWrite: false,
+    })
+  )
+);
 
 function pickAsteroidRadius() {
   // Approximate Kirkwood gaps for a less uniform ring.
@@ -458,9 +470,9 @@ function buildAsteroidLayer(count, size, opacity) {
 }
 
 const asteroidLayers = [
-  buildAsteroidLayer(750, 0.055, 0.66),
-  buildAsteroidLayer(520, 0.08, 0.58),
-  buildAsteroidLayer(360, 0.12, 0.5),
+  buildAsteroidLayer(1200, 0.055, 0.68),
+  buildAsteroidLayer(900, 0.08, 0.62),
+  buildAsteroidLayer(650, 0.12, 0.55),
 ];
 
 const raycaster = new THREE.Raycaster();
