@@ -190,7 +190,7 @@ if (saturn) {
     depthWrite: false,
   });
   const ring = new THREE.Mesh(ringGeo, ringMat);
-  ring.rotation.x = -Math.PI / 2.45;
+  ring.rotation.x = -Math.PI / 2;
   saturn.mesh.add(ring);
 }
 
