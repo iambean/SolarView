@@ -285,7 +285,7 @@ export const BODY_DEFINITIONS = [
     parent: "saturn",
     radius: 1.0,
     texture: "titan",
-    orbitRadius: 11,
+    orbitRadius: 18,
     orbitalPeriodDays: 15.9,
     rotationHours: 382.7,
     orbitSpeedFactor: 0.09,

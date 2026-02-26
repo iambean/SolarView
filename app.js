@@ -9,6 +9,7 @@ import {
 } from "./config.js";
 
 const infoPanel = document.getElementById("infoPanel");
+const hint = document.getElementById("hint");
 const infoTitle = document.getElementById("infoTitle");
 const infoHighlight = document.getElementById("infoHighlight");
 const infoSummary = document.getElementById("infoSummary");
@@ -19,6 +20,19 @@ const audioNote = document.getElementById("audioNote");
 const closeInfo = document.getElementById("closeInfo");
 const muteBtn = document.getElementById("muteBtn");
 const canvas = document.getElementById("scene");
+
+function updatePlatformHint() {
+  if (!hint) return;
+  const isTouchLike =
+    window.matchMedia("(pointer: coarse)").matches ||
+    "ontouchstart" in window ||
+    navigator.maxTouchPoints > 0;
+  hint.textContent = isTouchLike
+    ? "单指旋转 / 双指缩放 / 三指平移"
+    : "左键旋转 / 滚轮缩放 / Shift+左键平移";
+}
+updatePlatformHint();
+window.addEventListener("resize", updatePlatformHint);
 
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -40,10 +54,13 @@ camera.position.set(...SCENE_CONFIG.camera.position);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
-controls.enablePan = false;
+controls.enablePan = true;
 controls.minDistance = SCENE_CONFIG.controls.minDistance;
 controls.maxDistance = SCENE_CONFIG.controls.maxDistance;
 controls.target.set(...SCENE_CONFIG.controls.target);
+// PC: left drag rotate, Shift+left drag pan, wheel zoom.
+controls.touches.ONE = THREE.TOUCH.ROTATE;
+controls.touches.TWO = THREE.TOUCH.DOLLY;
 
 scene.add(new THREE.AmbientLight(SCENE_CONFIG.lights.ambient.color, SCENE_CONFIG.lights.ambient.intensity));
 scene.add(
@@ -356,15 +373,17 @@ function showBodyInfo(body) {
   worldPaused = true;
 }
 
-closeInfo.addEventListener("click", () => {
+function closeInfoPanel() {
+  if (infoPanel.classList.contains("hidden")) return;
   infoPanel.classList.add("hidden");
   worldPaused = false;
-});
+}
+
+closeInfo.addEventListener("click", closeInfoPanel);
 
 window.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !infoPanel.classList.contains("hidden")) {
-    infoPanel.classList.add("hidden");
-    worldPaused = false;
+    closeInfoPanel();
   }
 });
 
@@ -404,6 +423,12 @@ renderer.domElement.addEventListener("pointerdown", (event) => {
   pointerDown = { x: event.clientX, y: event.clientY };
 });
 renderer.domElement.addEventListener("pointerup", (event) => {
+  if (!infoPanel.classList.contains("hidden")) {
+    closeInfoPanel();
+    pointerDown = null;
+    return;
+  }
+
   if (!pointerDown) return;
   const dx = event.clientX - pointerDown.x;
   const dy = event.clientY - pointerDown.y;
@@ -419,6 +444,12 @@ renderer.domElement.addEventListener("pointerup", (event) => {
 
   const body = bodiesById.get(hit.object.userData.bodyId);
   if (body) focusBody(body);
+});
+
+document.addEventListener("pointerdown", (event) => {
+  if (infoPanel.classList.contains("hidden")) return;
+  if (infoPanel.contains(event.target)) return;
+  closeInfoPanel();
 });
 
 function updateBodies(dt) {
@@ -502,38 +533,59 @@ function updateCameraTween() {
   if (t >= 1) cameraTween = null;
 }
 
-const panel = document.getElementById("controlsPanel");
-function panCamera(direction) {
-  const step = Math.max(3, camera.position.distanceTo(controls.target) * 0.04);
+function panCameraByPixels(dx, dy) {
+  const distance = camera.position.distanceTo(controls.target);
+  const panScale = distance * 0.0016;
   const forward = new THREE.Vector3();
   camera.getWorldDirection(forward);
   const right = new THREE.Vector3().crossVectors(forward, camera.up).normalize();
   const up = camera.up.clone().normalize();
-  const delta = new THREE.Vector3();
-  if (direction === "up") delta.add(up.multiplyScalar(step));
-  if (direction === "down") delta.add(up.multiplyScalar(-step));
-  if (direction === "left") delta.add(right.multiplyScalar(-step));
-  if (direction === "right") delta.add(right.multiplyScalar(step));
+  const delta = new THREE.Vector3()
+    .add(right.multiplyScalar(-dx * panScale))
+    .add(up.multiplyScalar(dy * panScale));
   camera.position.add(delta);
   controls.target.add(delta);
 }
-function rotateView(direction) {
-  const targetOffset = controls.target.clone().sub(camera.position);
-  const forward = targetOffset.clone().normalize();
-  const right = new THREE.Vector3().crossVectors(forward, camera.up).normalize();
-  if (direction === "left") targetOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.11);
-  if (direction === "right") targetOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), -0.11);
-  if (direction === "up") targetOffset.applyAxisAngle(right, 0.09);
-  if (direction === "down") targetOffset.applyAxisAngle(right, -0.09);
-  controls.target.copy(camera.position.clone().add(targetOffset));
-}
-panel.querySelectorAll("button[data-action]").forEach((button) => {
-  button.addEventListener("click", () => {
-    const action = button.dataset.action;
-    if (!action) return;
-    if (action.startsWith("pan-")) panCamera(action.replace("pan-", ""));
-    if (action.startsWith("look-")) rotateView(action.replace("look-", ""));
-  });
+
+let threeFingerPan = null;
+renderer.domElement.addEventListener(
+  "touchstart",
+  (e) => {
+    if (e.touches.length === 3) {
+      const cX = (e.touches[0].clientX + e.touches[1].clientX + e.touches[2].clientX) / 3;
+      const cY = (e.touches[0].clientY + e.touches[1].clientY + e.touches[2].clientY) / 3;
+      threeFingerPan = { x: cX, y: cY };
+      controls.enabled = false;
+      e.preventDefault();
+    }
+  },
+  { passive: false }
+);
+renderer.domElement.addEventListener(
+  "touchmove",
+  (e) => {
+    if (threeFingerPan && e.touches.length === 3) {
+      const cX = (e.touches[0].clientX + e.touches[1].clientX + e.touches[2].clientX) / 3;
+      const cY = (e.touches[0].clientY + e.touches[1].clientY + e.touches[2].clientY) / 3;
+      panCameraByPixels(cX - threeFingerPan.x, cY - threeFingerPan.y);
+      threeFingerPan.x = cX;
+      threeFingerPan.y = cY;
+      e.preventDefault();
+    }
+  },
+  { passive: false }
+);
+renderer.domElement.addEventListener("touchend", () => {
+  if (threeFingerPan) {
+    threeFingerPan = null;
+    controls.enabled = true;
+  }
+});
+renderer.domElement.addEventListener("touchcancel", () => {
+  if (threeFingerPan) {
+    threeFingerPan = null;
+    controls.enabled = true;
+  }
 });
 
 const clock = new THREE.Clock();
