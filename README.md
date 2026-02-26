@@ -19,6 +19,7 @@ npx serve .
 - Three.js 本地模块：`lib/three.module.js`
 - OrbitControls 本地模块：`lib/OrbitControls.js`
 - 真实行星贴图：`assets/textures/`
+- 运行配置与天体数据：`config.js`
 
 ## 主要数据来源（以 NASA 为准）
 
