@@ -408,10 +408,9 @@ function pickAsteroidRadius() {
 function buildAsteroidLayer(count, size, opacity) {
   const geometry = new THREE.IcosahedronGeometry(1, 0);
   const material = new THREE.MeshBasicMaterial({
-    color: 0xc7c1b8,
-    transparent: true,
-    opacity: Math.min(0.95, opacity + 0.22),
-    vertexColors: true,
+    color: 0xd8d2c4,
+    transparent: false,
+    opacity: 1,
   });
   const mesh = new THREE.InstancedMesh(geometry, material, count);
   mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -428,15 +427,14 @@ function buildAsteroidLayer(count, size, opacity) {
     const minorRadius = radius * (1 - eccentricity);
     const inclAmp = 0.15 + Math.random() * 0.95;
     const inclPhase = Math.random() * Math.PI * 2;
-    const scale = size * (0.35 + Math.random() * 1.25);
+    const scale = size * (0.45 + Math.random() * 0.9);
     const spin = (Math.random() - 0.5) * 0.8;
     const rot = new THREE.Euler(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
 
     data.push({ radius, minorRadius, angle, speed, inclAmp, inclPhase, scale, spin, rot });
 
-    const tone = 0.72 + Math.random() * 0.28;
-    const warm = 0.9 + Math.random() * 0.1;
-    mesh.setColorAt(i, new THREE.Color(tone * warm, tone * 0.9, tone * 0.78));
+    const tone = 0.8 + Math.random() * 0.2;
+    mesh.setColorAt(i, new THREE.Color(tone, tone * 0.93, tone * 0.84));
 
     dummy.position.set(Math.cos(angle) * radius, Math.sin(angle * 2 + inclPhase) * inclAmp, Math.sin(angle) * minorRadius);
     dummy.rotation.copy(rot);
@@ -452,9 +450,9 @@ function buildAsteroidLayer(count, size, opacity) {
 }
 
 const asteroidLayers = [
-  buildAsteroidLayer(750, 0.18, 0.66),
-  buildAsteroidLayer(520, 0.27, 0.58),
-  buildAsteroidLayer(360, 0.4, 0.5),
+  buildAsteroidLayer(750, 0.055, 0.66),
+  buildAsteroidLayer(520, 0.08, 0.58),
+  buildAsteroidLayer(360, 0.12, 0.5),
 ];
 
 const raycaster = new THREE.Raycaster();
