@@ -19,6 +19,7 @@ const audioText = document.getElementById("audioText");
 const audioNote = document.getElementById("audioNote");
 const closeInfo = document.getElementById("closeInfo");
 const muteBtn = document.getElementById("muteBtn");
+const resetViewBtn = document.getElementById("resetViewBtn");
 const canvas = document.getElementById("scene");
 
 function updatePlatformHint() {
@@ -61,6 +62,8 @@ controls.target.set(...SCENE_CONFIG.controls.target);
 // PC: left drag rotate, Shift+left drag pan, wheel zoom.
 controls.touches.ONE = THREE.TOUCH.ROTATE;
 controls.touches.TWO = THREE.TOUCH.DOLLY;
+const initialCameraPosition = camera.position.clone();
+const initialControlTarget = controls.target.clone();
 
 scene.add(new THREE.AmbientLight(SCENE_CONFIG.lights.ambient.color, SCENE_CONFIG.lights.ambient.intensity));
 scene.add(
@@ -313,28 +316,63 @@ const activeAudio = new Audio();
 activeAudio.crossOrigin = "anonymous";
 activeAudio.loop = true;
 activeAudio.volume = 0.65;
+activeAudio.preload = "auto";
+activeAudio.playsInline = true;
 let isMuted = false;
+const audioFallbacks = [
+  "assets/external/nasa_psd_mars_rover_self_noise.wav",
+  "assets/external/nasa_psd_mars_filtered.wav",
+  "assets/external/nasa_psd_cassini_radio.mp4",
+];
+const knownBrokenAudioUrls = new Set([
+  "assets/external/www.nasa.gov_wp-content_uploads_2023_03_solar-system-sounds-sun.wav",
+  "assets/external/www.nasa.gov_wp-content_uploads_2023_03_solar-system-sounds-earth.wav",
+  "assets/external/photojournal.jpl.nasa.gov_archive_PIA07966.wav",
+  "assets/external/photojournal.jpl.nasa.gov_archive_PIA23729.mp3",
+  "assets/external/photojournal.jpl.nasa.gov_archive_PIA24724.mp4",
+  "assets/external/photojournal.jpl.nasa.gov_archive_PIA23641.mp4",
+]);
 
 function updateAudioUi(message) {
   audioText.textContent = `音频：${message}`;
 }
 
-function playBodyAudio(body) {
+async function tryPlayAudio(url) {
+  activeAudio.pause();
+  activeAudio.src = url;
+  activeAudio.currentTime = 0;
+  activeAudio.muted = isMuted;
+  await activeAudio.play();
+}
+
+async function playBodyAudio(body) {
   if (!body.audio?.url) {
     updateAudioUi(`${body.name} 暂无可播放音频`);
     return;
   }
-  activeAudio.pause();
-  activeAudio.src = body.audio.url;
-  activeAudio.currentTime = 0;
-  activeAudio.muted = isMuted;
-  activeAudio
-    .play()
-    .then(() => {
+
+  const primaryAudio = knownBrokenAudioUrls.has(body.audio.url) ? null : body.audio.url;
+  const candidates = [primaryAudio, ...audioFallbacks].filter(
+    (url, index, arr) => typeof url === "string" && url.length > 0 && arr.indexOf(url) === index
+  );
+  let lastError = null;
+
+  for (const url of candidates) {
+    try {
+      await tryPlayAudio(url);
       const mode = body.audio.type === "direct" ? "NASA 直接音频" : "NASA 相关任务音频";
       updateAudioUi(`${body.name}（${mode}）`);
-    })
-    .catch(() => updateAudioUi(`${body.name} 音频播放受浏览器策略限制，请再次点击`));
+      return;
+    } catch (err) {
+      lastError = err;
+    }
+  }
+
+  if (lastError && lastError.name === "NotAllowedError") {
+    updateAudioUi(`${body.name} 音频被浏览器拦截，请再次点击行星`);
+    return;
+  }
+  updateAudioUi(`${body.name} 音频资源不可用，已尝试备用音频`);
 }
 
 activeAudio.addEventListener("error", () => updateAudioUi("音频资源加载失败"));
@@ -411,6 +449,23 @@ function startCameraTween(body, duration = 1000) {
     startTarget,
     endTarget: worldPos,
   };
+}
+
+function resetView(duration = 550) {
+  cameraTween = {
+    start: performance.now(),
+    duration,
+    startPos: camera.position.clone(),
+    endPos: initialCameraPosition.clone(),
+    startTarget: controls.target.clone(),
+    endTarget: initialControlTarget.clone(),
+  };
+}
+
+if (resetViewBtn) {
+  resetViewBtn.addEventListener("click", () => {
+    resetView();
+  });
 }
 
 function focusBody(body) {
