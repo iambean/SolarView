@@ -1,0 +1,46 @@
+{
+  "name": "solarview-taro",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SolarView Taro multi-end (H5 + Weapp)",
+  "scripts": {
+    "dev:h5": "taro build --type h5 --watch",
+    "dev:weapp": "taro build --type weapp --watch",
+    "build:h5": "taro build --type h5",
+    "build:weapp": "taro build --type weapp",
+    "lint": "eslint src --ext .ts,.tsx"
+  },
+  "dependencies": {
+    "@tarojs/components": "4.1.11",
+    "@tarojs/react": "^4.1.11",
+    "@tarojs/runtime": "4.1.11",
+    "@tarojs/taro": "4.1.11",
+    "@tarojs/webpack5-runner": "^4.1.11",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.163.0",
+    "threejs-miniprogram": "0.0.8"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-react": "^7.28.5",
+    "@tarojs/cli": "4.1.11",
+    "@tarojs/helper": "^4.1.11",
+    "@tarojs/plugin-framework-react": "4.1.11",
+    "@tarojs/plugin-platform-h5": "4.1.11",
+    "@tarojs/plugin-platform-weapp": "4.1.11",
+    "@tarojs/service": "^4.1.11",
+    "@tarojs/shared": "^4.1.11",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@types/three": "^0.183.1",
+    "babel-preset-taro": "^4.1.11",
+    "eslint": "^8.57.1",
+    "less": "^4.5.1",
+    "postcss": "^8.5.6",
+    "stylus": "^0.64.0",
+    "typescript": "^5.6.3",
+    "webpack": "^5.91.0"
+  },
+  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
+}

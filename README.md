@@ -57,3 +57,20 @@ npx serve .
 - 下载失败清单：`assets/external/failed.tsv`
 - 完整性报告（状态码/文件类型）：`assets/external/integrity_report.tsv`
 - 如果你下一步要“真实 NASA/JPL 图片贴图文件版”，我可以再把各星球贴图下载到 `assets/textures/` 并切换为真实图贴。
+
+## Taro 多端版本（H5 + 微信小程序）
+
+已新增 Taro 重构版本目录：`taro/`，可一键双端构建。
+
+```bash
+cd taro
+npm install
+
+# H5
+npm run build:h5
+
+# 微信小程序
+npm run build:weapp
+```
+
+详细说明见：`taro/README.md`

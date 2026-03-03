@@ -1,0 +1,12 @@
+{
+  "miniprogramRoot": "dist/",
+  "projectname": "solarview-taro",
+  "description": "SolarView Taro build",
+  "appid": "wx8b6d3441940c6972",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "postcss": true,
+    "minified": true
+  }
+}
