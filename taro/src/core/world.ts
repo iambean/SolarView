@@ -18,6 +18,8 @@ export interface BodyState extends BodyDefinition {
 
 export interface AsteroidLayerState {
   mesh: any;
+  mode: 'instanced' | 'points';
+  positionAttr?: any;
   data: Array<{
     radius: number;
     minorRadius: number;
@@ -73,6 +75,44 @@ export function loadTextures(THREE: any, textureLoader: any, renderer?: any) {
   };
 }
 
+function createFloatAttribute(THREE: any, values: number[] | Float32Array, itemSize: number) {
+  if (THREE.Float32BufferAttribute) {
+    return new THREE.Float32BufferAttribute(values, itemSize);
+  }
+  if (THREE.BufferAttribute) {
+    const array = values instanceof Float32Array ? values : new Float32Array(values);
+    return new THREE.BufferAttribute(array, itemSize);
+  }
+  return null;
+}
+
+function assignGeometryAttribute(geometry: any, name: string, attribute: any) {
+  if (!geometry || !attribute) return;
+  if (typeof geometry.setAttribute === 'function') {
+    geometry.setAttribute(name, attribute);
+  } else if (typeof geometry.addAttribute === 'function') {
+    geometry.addAttribute(name, attribute);
+  }
+}
+
+function buildLineGeometryFromPoints(THREE: any, points: any[]) {
+  const geo = new THREE.BufferGeometry();
+  if (typeof geo.setFromPoints === 'function') {
+    geo.setFromPoints(points);
+    return geo;
+  }
+
+  const pos = new Float32Array(points.length * 3);
+  for (let i = 0; i < points.length; i += 1) {
+    pos[i * 3] = points[i].x;
+    pos[i * 3 + 1] = points[i].y;
+    pos[i * 3 + 2] = points[i].z;
+  }
+  const attr = createFloatAttribute(THREE, pos, 3);
+  assignGeometryAttribute(geo, 'position', attr);
+  return geo;
+}
+
 export function makeOrbit(THREE: any, radius: number, parent: any, orbitLines: any[]) {
   const points: any[] = [];
   const seg = 128;
@@ -80,7 +120,7 @@ export function makeOrbit(THREE: any, radius: number, parent: any, orbitLines: a
     const t = (i / seg) * Math.PI * 2;
     points.push(new THREE.Vector3(Math.cos(t) * radius, 0, Math.sin(t) * radius));
   }
-  const geo = new THREE.BufferGeometry().setFromPoints(points);
+  const geo = buildLineGeometryFromPoints(THREE, points);
   const mat = new THREE.LineBasicMaterial({ color: 0x355788, transparent: true, opacity: 0.28 });
   const line = new THREE.Line(geo, mat);
   parent.add(line);
@@ -141,7 +181,7 @@ export function buildWorld(THREE: any, scene: any, textures: Record<string, any>
     const RingCtor = THREE.RingBufferGeometry || THREE.RingGeometry;
     const ringGeo = new RingCtor(innerR, outerR, 128);
     const pos = ringGeo?.attributes?.position;
-    if (pos && typeof ringGeo.setAttribute === 'function' && THREE.Float32BufferAttribute) {
+    if (pos) {
       const uv: number[] = [];
       for (let i = 0; i < pos.count; i += 1) {
         const x = pos.getX(i);
@@ -150,7 +190,8 @@ export function buildWorld(THREE: any, scene: any, textures: Record<string, any>
         const u = (r - innerR) / (outerR - innerR);
         uv.push(u, 0.5);
       }
-      ringGeo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+      const uvAttr = createFloatAttribute(THREE, uv, 2);
+      assignGeometryAttribute(ringGeo, 'uv', uvAttr);
     }
 
     if ('ClampToEdgeWrapping' in THREE) {
@@ -184,7 +225,8 @@ export function buildWorld(THREE: any, scene: any, textures: Record<string, any>
     starPos[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
   }
   const starGeo = new THREE.BufferGeometry();
-  starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+  const starPosAttr = createFloatAttribute(THREE, starPos, 3);
+  assignGeometryAttribute(starGeo, 'position', starPosAttr);
   scene.add(
     new THREE.Points(
       starGeo,
@@ -208,21 +250,6 @@ export function buildWorld(THREE: any, scene: any, textures: Record<string, any>
   };
 
   const asteroidLayers: AsteroidLayerState[] = ASTEROID_BELT_CONFIG.layers.map((layer) => {
-    const geo = new THREE.IcosahedronGeometry(1, 0);
-    const mat = new THREE.MeshStandardMaterial({
-      color: 0xc9c2b5,
-      roughness: 1,
-      metalness: 0,
-      emissive: 0x5f5a52,
-      emissiveIntensity: 1.05,
-      transparent: true,
-      opacity: Math.min(1, layer.opacity + 0.08),
-    });
-    const mesh = new THREE.InstancedMesh(geo, mat, layer.count);
-    mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-    mesh.frustumCulled = false;
-    scene.add(mesh);
-
     const data: AsteroidLayerState['data'] = [];
     const dummy = new THREE.Object3D();
     for (let i = 0; i < layer.count; i += 1) {
@@ -237,14 +264,60 @@ export function buildWorld(THREE: any, scene: any, textures: Record<string, any>
       const rot = new THREE.Euler(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
 
       data.push({ radius, minorRadius, angle, inclAmp, inclPhase, scale, spin, rot });
-      dummy.position.set(Math.cos(angle) * radius, Math.sin(angle * 2 + inclPhase) * inclAmp, Math.sin(angle) * minorRadius);
-      dummy.rotation.copy(rot);
-      dummy.scale.setScalar(scale);
-      dummy.updateMatrix();
-      mesh.setMatrixAt(i, dummy.matrix);
     }
-    mesh.instanceMatrix.needsUpdate = true;
-    return { mesh, data, dummy };
+
+    if (typeof THREE.InstancedMesh === 'function') {
+      const geo = new THREE.IcosahedronGeometry(1, 0);
+      const mat = new THREE.MeshStandardMaterial({
+        color: 0xc9c2b5,
+        roughness: 1,
+        metalness: 0,
+        emissive: 0x5f5a52,
+        emissiveIntensity: 1.05,
+        transparent: true,
+        opacity: Math.min(1, layer.opacity + 0.08),
+      });
+      const mesh = new THREE.InstancedMesh(geo, mat, layer.count);
+      mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      mesh.frustumCulled = false;
+      scene.add(mesh);
+
+      for (let i = 0; i < data.length; i += 1) {
+        const a = data[i];
+        dummy.position.set(Math.cos(a.angle) * a.radius, Math.sin(a.angle * 2 + a.inclPhase) * a.inclAmp, Math.sin(a.angle) * a.minorRadius);
+        dummy.rotation.copy(a.rot);
+        dummy.scale.setScalar(a.scale);
+        dummy.updateMatrix();
+        mesh.setMatrixAt(i, dummy.matrix);
+      }
+      mesh.instanceMatrix.needsUpdate = true;
+      return { mesh, mode: 'instanced', data, dummy };
+    }
+
+    // Fallback for older Three (e.g. mini-program runtime): render asteroids as points.
+    const pointsGeo = new THREE.BufferGeometry();
+    const pointsArray = new Float32Array(layer.count * 3);
+    for (let i = 0; i < data.length; i += 1) {
+      const a = data[i];
+      pointsArray[i * 3] = Math.cos(a.angle) * a.radius;
+      pointsArray[i * 3 + 1] = Math.sin(a.angle * 2 + a.inclPhase) * a.inclAmp;
+      pointsArray[i * 3 + 2] = Math.sin(a.angle) * a.minorRadius;
+    }
+    const posAttr = createFloatAttribute(THREE, pointsArray, 3);
+    assignGeometryAttribute(pointsGeo, 'position', posAttr);
+
+    const pointsMat = new THREE.PointsMaterial({
+      color: 0xc9c2b5,
+      size: Math.max(0.08, layer.size * 1.2),
+      sizeAttenuation: true,
+      transparent: true,
+      opacity: Math.min(1, layer.opacity + 0.08),
+      depthWrite: false,
+    });
+    const mesh = new THREE.Points(pointsGeo, pointsMat);
+    mesh.frustumCulled = false;
+    scene.add(mesh);
+    return { mesh, mode: 'points', positionAttr: posAttr, data, dummy };
   });
 
   return { bodiesById, clickables, orbitLines, asteroidLayers };
@@ -303,23 +376,44 @@ export function updateBodies(THREE: any, bodiesById: Map<string, BodyState>, ast
 
   const asteroidAngularSpeed = getAveragePlanetAngularSpeed(bodiesById);
   asteroidLayers.forEach((layer) => {
+    if (layer.mode === 'instanced' && typeof layer.mesh.setMatrixAt === 'function') {
+      for (let i = 0; i < layer.data.length; i += 1) {
+        const a = layer.data[i];
+        a.angle += dt * asteroidAngularSpeed;
+        layer.dummy.position.set(
+          Math.cos(a.angle) * a.radius,
+          Math.sin(a.angle * 2 + a.inclPhase) * a.inclAmp,
+          Math.sin(a.angle) * a.minorRadius,
+        );
+        a.rot.x += a.spin * 0.01;
+        a.rot.y += a.spin * 0.013;
+        a.rot.z += a.spin * 0.008;
+        layer.dummy.rotation.copy(a.rot);
+        layer.dummy.scale.setScalar(a.scale);
+        layer.dummy.updateMatrix();
+        layer.mesh.setMatrixAt(i, layer.dummy.matrix);
+      }
+      layer.mesh.instanceMatrix.needsUpdate = true;
+      return;
+    }
+
+    const posAttr = layer.positionAttr || layer.mesh?.geometry?.attributes?.position;
+    if (!posAttr) return;
     for (let i = 0; i < layer.data.length; i += 1) {
       const a = layer.data[i];
       a.angle += dt * asteroidAngularSpeed;
-      layer.dummy.position.set(
-        Math.cos(a.angle) * a.radius,
-        Math.sin(a.angle * 2 + a.inclPhase) * a.inclAmp,
-        Math.sin(a.angle) * a.minorRadius,
-      );
-      a.rot.x += a.spin * 0.01;
-      a.rot.y += a.spin * 0.013;
-      a.rot.z += a.spin * 0.008;
-      layer.dummy.rotation.copy(a.rot);
-      layer.dummy.scale.setScalar(a.scale);
-      layer.dummy.updateMatrix();
-      layer.mesh.setMatrixAt(i, layer.dummy.matrix);
+      const x = Math.cos(a.angle) * a.radius;
+      const y = Math.sin(a.angle * 2 + a.inclPhase) * a.inclAmp;
+      const z = Math.sin(a.angle) * a.minorRadius;
+      if (typeof posAttr.setXYZ === 'function') {
+        posAttr.setXYZ(i, x, y, z);
+      } else if (posAttr.array) {
+        posAttr.array[i * 3] = x;
+        posAttr.array[i * 3 + 1] = y;
+        posAttr.array[i * 3 + 2] = z;
+      }
     }
-    layer.mesh.instanceMatrix.needsUpdate = true;
+    posAttr.needsUpdate = true;
   });
 }
 
