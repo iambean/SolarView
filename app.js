@@ -3,6 +3,7 @@ import { OrbitControls } from "./lib/OrbitControls.js";
 import {
   ASTEROID_BELT_CONFIG,
   BODY_DEFINITIONS,
+  ossAssetUrl,
   SCENE_CONFIG,
   SIMULATION_CONFIG,
   STARFIELD_CONFIG,
@@ -100,18 +101,18 @@ function loadTexture(path) {
 
 // Texture keys are referenced by `BODY_DEFINITIONS[*].texture`.
 const textures = {
-  sun: loadTexture("./assets/textures/sun.jpg"),
-  mercury: loadTexture("./assets/textures/mercury.jpg"),
-  venus: loadTexture("./assets/textures/venus.jpg"),
-  earth: loadTexture("./assets/textures/earth.jpg"),
-  mars: loadTexture("./assets/textures/mars.jpg"),
-  jupiter: loadTexture("./assets/textures/jupiter.jpg"),
-  saturn: loadTexture("./assets/textures/saturn.jpg"),
-  saturnRing: loadTexture("./assets/textures/saturn_ring.png"),
-  uranus: loadTexture("./assets/textures/uranus.jpg"),
-  neptune: loadTexture("./assets/textures/neptune.jpg"),
-  moon: loadTexture("./assets/textures/moon.jpg"),
-  titan: loadTexture("./assets/textures/titan.png"),
+  sun: loadTexture(ossAssetUrl("textures/sun.jpg")),
+  mercury: loadTexture(ossAssetUrl("textures/mercury.jpg")),
+  venus: loadTexture(ossAssetUrl("textures/venus.jpg")),
+  earth: loadTexture(ossAssetUrl("textures/earth.jpg")),
+  mars: loadTexture(ossAssetUrl("textures/mars.jpg")),
+  jupiter: loadTexture(ossAssetUrl("textures/jupiter.jpg")),
+  saturn: loadTexture(ossAssetUrl("textures/saturn.jpg")),
+  saturnRing: loadTexture(ossAssetUrl("textures/saturn_ring.png")),
+  uranus: loadTexture(ossAssetUrl("textures/uranus.jpg")),
+  neptune: loadTexture(ossAssetUrl("textures/neptune.jpg")),
+  moon: loadTexture(ossAssetUrl("textures/moon.jpg")),
+  titan: loadTexture(ossAssetUrl("textures/titan.png")),
 };
 
 let worldPaused = false;
@@ -320,17 +321,21 @@ activeAudio.preload = "auto";
 activeAudio.playsInline = true;
 let isMuted = false;
 const audioFallbacks = [
-  "assets/external/nasa_psd_mars_rover_self_noise.wav",
-  "assets/external/nasa_psd_mars_filtered.wav",
-  "assets/external/nasa_psd_cassini_radio.mp4",
+  ossAssetUrl("external/nasa_psd_mars_rover_self_noise.wav"),
+  ossAssetUrl("external/nasa_psd_mars_filtered.wav"),
+  ossAssetUrl("external/nasa_psd_cassini_radio.mp4"),
+];
+const knownBrokenAudioFiles = [
+  "www.nasa.gov_wp-content_uploads_2023_03_solar-system-sounds-sun.wav",
+  "www.nasa.gov_wp-content_uploads_2023_03_solar-system-sounds-earth.wav",
+  "photojournal.jpl.nasa.gov_archive_PIA07966.wav",
+  "photojournal.jpl.nasa.gov_archive_PIA23729.mp3",
+  "photojournal.jpl.nasa.gov_archive_PIA24724.mp4",
+  "photojournal.jpl.nasa.gov_archive_PIA23641.mp4",
 ];
 const knownBrokenAudioUrls = new Set([
-  "assets/external/www.nasa.gov_wp-content_uploads_2023_03_solar-system-sounds-sun.wav",
-  "assets/external/www.nasa.gov_wp-content_uploads_2023_03_solar-system-sounds-earth.wav",
-  "assets/external/photojournal.jpl.nasa.gov_archive_PIA07966.wav",
-  "assets/external/photojournal.jpl.nasa.gov_archive_PIA23729.mp3",
-  "assets/external/photojournal.jpl.nasa.gov_archive_PIA24724.mp4",
-  "assets/external/photojournal.jpl.nasa.gov_archive_PIA23641.mp4",
+  ...knownBrokenAudioFiles.map((file) => `assets/external/${file}`),
+  ...knownBrokenAudioFiles.map((file) => ossAssetUrl(`external/${file}`)),
 ]);
 
 function updateAudioUi(message) {

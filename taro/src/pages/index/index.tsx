@@ -101,7 +101,8 @@ export default function IndexPage() {
       window.open(url, '_blank', 'noopener,noreferrer');
       return;
     }
-    Taro.showToast({ title: '小程序端无法直接打开本地来源页', icon: 'none' });
+    Taro.setClipboardData({ data: url });
+    Taro.showToast({ title: '链接已复制，请在浏览器打开', icon: 'none' });
   };
 
   return (

@@ -1,4 +1,5 @@
 import type { BodyDefinition } from "./types";
+import { ossAssetUrl } from "./oss";
 
 export const SCENE_CONFIG = {
   // 渲染器配置
@@ -117,11 +118,11 @@ export const BODY_DEFINITIONS: BodyDefinition[] = [
     summary: "太阳是太阳系中心恒星，提供行星所需的光和热。",
     facts: ["约占太阳系总质量的 99.8%。", "光从太阳到地球约需 8 分 20 秒。", "太阳活动会影响空间天气与地球电离层。"],
     sources: [
-      { label: "NASA Solar System Exploration - Sun", url: "assets/external/solarsystem.nasa.gov_sun_overview_" },
-      { label: "NASA Science - Sun", url: "assets/external/science.nasa.gov_sun_" },
+      { label: "NASA Solar System Exploration - Sun", url: ossAssetUrl("external/solarsystem.nasa.gov_sun_overview_") },
+      { label: "NASA Science - Sun", url: ossAssetUrl("external/science.nasa.gov_sun_") },
     ],
     audio: {
-      url: "assets/external/www.nasa.gov_wp-content_uploads_2023_03_solar-system-sounds-sun.wav",
+      url: ossAssetUrl("external/www.nasa.gov_wp-content_uploads_2023_03_solar-system-sounds-sun.wav"),
       type: "direct",
       note: "NASA 官方：SOHO 观测数据转译的太阳声音。",
     },
@@ -138,8 +139,8 @@ export const BODY_DEFINITIONS: BodyDefinition[] = [
     highlight: "距离太阳最近的行星，公转最快。",
     summary: "水星是最靠近太阳的行星，昼夜温差极端。",
     facts: ["公转周期约 88 天。", "表面遍布撞击坑，几乎无大气层。", "自转周期约 59 个地球日。"],
-    sources: [{ label: "NASA - Mercury", url: "assets/external/solarsystem.nasa.gov_planets_mercury_overview_" }],
-    audio: { url: "assets/external/www.nasa.gov_wp-content_uploads_2023_03_solar-system-sounds-sun.wav", type: "related", note: "该天体暂无 NASA 公开直接音频，播放最近相关任务音频（太阳环境）。" },
+    sources: [{ label: "NASA - Mercury", url: ossAssetUrl("external/solarsystem.nasa.gov_planets_mercury_overview_") }],
+    audio: { url: ossAssetUrl("external/www.nasa.gov_wp-content_uploads_2023_03_solar-system-sounds-sun.wav"), type: "related", note: "该天体暂无 NASA 公开直接音频，播放最近相关任务音频（太阳环境）。" },
   },
   {
     id: "venus",
@@ -153,8 +154,8 @@ export const BODY_DEFINITIONS: BodyDefinition[] = [
     highlight: "自转方向与多数行星相反，且表面温度极高。",
     summary: "金星大小接近地球，但拥有极端温室效应。",
     facts: ["表面温度在八大行星中最高。", "浓密大气以二氧化碳为主。", "自转方向与多数行星相反。"],
-    sources: [{ label: "NASA - Venus", url: "assets/external/solarsystem.nasa.gov_planets_venus_overview_" }],
-    audio: { url: "assets/external/www.nasa.gov_wp-content_uploads_2023_03_solar-system-sounds-sun.wav", type: "related", note: "该天体暂无 NASA 公开直接音频，播放最近相关任务音频（太阳环境）。" },
+    sources: [{ label: "NASA - Venus", url: ossAssetUrl("external/solarsystem.nasa.gov_planets_venus_overview_") }],
+    audio: { url: ossAssetUrl("external/www.nasa.gov_wp-content_uploads_2023_03_solar-system-sounds-sun.wav"), type: "related", note: "该天体暂无 NASA 公开直接音频，播放最近相关任务音频（太阳环境）。" },
   },
   {
     id: "earth",
@@ -168,8 +169,8 @@ export const BODY_DEFINITIONS: BodyDefinition[] = [
     highlight: "太阳系已知唯一拥有生命的行星。",
     summary: "地球是目前已知唯一存在稳定地表液态水并孕育生命的行星。",
     facts: ["拥有全球海洋与活跃板块构造。", "1 个天然卫星（月球）。", "磁层可偏转大量高能带电粒子。"],
-    sources: [{ label: "NASA - Earth", url: "assets/external/solarsystem.nasa.gov_planets_earth_overview_" }],
-    audio: { url: "assets/external/www.nasa.gov_wp-content_uploads_2023_03_solar-system-sounds-earth.wav", type: "related", note: "NASA 官方：Apollo 11 月面任务相关音频。" },
+    sources: [{ label: "NASA - Earth", url: ossAssetUrl("external/solarsystem.nasa.gov_planets_earth_overview_") }],
+    audio: { url: ossAssetUrl("external/www.nasa.gov_wp-content_uploads_2023_03_solar-system-sounds-earth.wav"), type: "related", note: "NASA 官方：Apollo 11 月面任务相关音频。" },
   },
   {
     id: "mars",
@@ -183,8 +184,8 @@ export const BODY_DEFINITIONS: BodyDefinition[] = [
     highlight: "最像地球的岩质行星，也是人类重点探测目标。",
     summary: "火星是岩质行星，拥有稀薄大气与巨型火山地貌。",
     facts: ["大气以二氧化碳为主且很稀薄。", "拥有奥林帕斯山等大型地貌。", "多个 NASA 探测器在轨或在地表工作过。"],
-    sources: [{ label: "NASA - Mars", url: "assets/external/solarsystem.nasa.gov_planets_mars_overview_" }],
-    audio: { url: "assets/external/photojournal.jpl.nasa.gov_archive_PIA23729.mp3", type: "direct", note: "NASA 官方：Perseverance 记录的火星环境声音。" },
+    sources: [{ label: "NASA - Mars", url: ossAssetUrl("external/solarsystem.nasa.gov_planets_mars_overview_") }],
+    audio: { url: ossAssetUrl("external/photojournal.jpl.nasa.gov_archive_PIA23729.mp3"), type: "direct", note: "NASA 官方：Perseverance 记录的火星环境声音。" },
   },
   {
     id: "jupiter",
@@ -198,8 +199,8 @@ export const BODY_DEFINITIONS: BodyDefinition[] = [
     highlight: "太阳系最大行星，拥有极强磁场和大红斑。",
     summary: "木星是太阳系最大行星，拥有强磁场和著名的大红斑。",
     facts: ["主要由氢和氦组成。", "拥有大量卫星系统。", "Juno 探测器持续研究其内部与磁场。"],
-    sources: [{ label: "NASA - Jupiter", url: "assets/external/solarsystem.nasa.gov_planets_jupiter_overview_" }],
-    audio: { url: "assets/external/photojournal.jpl.nasa.gov_archive_PIA24724.mp4", type: "direct", note: "NASA 官方：Juno 观测到的木星极光电磁波音频化结果。" },
+    sources: [{ label: "NASA - Jupiter", url: ossAssetUrl("external/solarsystem.nasa.gov_planets_jupiter_overview_") }],
+    audio: { url: ossAssetUrl("external/photojournal.jpl.nasa.gov_archive_PIA24724.mp4"), type: "direct", note: "NASA 官方：Juno 观测到的木星极光电磁波音频化结果。" },
   },
   {
     id: "saturn",
@@ -213,8 +214,8 @@ export const BODY_DEFINITIONS: BodyDefinition[] = [
     highlight: "拥有太阳系最显著的行星环系统。",
     summary: "土星以明亮环系著称，是典型气体巨行星。",
     facts: ["环系主要由冰粒与岩屑组成。", "平均密度低于水。", "Cassini 长期绕土星探测，数据极为丰富。"],
-    sources: [{ label: "NASA - Saturn", url: "assets/external/solarsystem.nasa.gov_planets_saturn_overview_" }],
-    audio: { url: "assets/external/photojournal.jpl.nasa.gov_archive_PIA07966.wav", type: "direct", note: "NASA 官方：Cassini 探测到的土星无线电发射音频。" },
+    sources: [{ label: "NASA - Saturn", url: ossAssetUrl("external/solarsystem.nasa.gov_planets_saturn_overview_") }],
+    audio: { url: ossAssetUrl("external/photojournal.jpl.nasa.gov_archive_PIA07966.wav"), type: "direct", note: "NASA 官方：Cassini 探测到的土星无线电发射音频。" },
   },
   {
     id: "uranus",
@@ -228,8 +229,8 @@ export const BODY_DEFINITIONS: BodyDefinition[] = [
     highlight: "自转轴几乎横躺，呈“躺着转”的独特姿态。",
     summary: "天王星是冰巨星，自转轴倾角约 98°，几乎侧躺公转。",
     facts: ["大气含氢、氦与甲烷。", "拥有暗淡环系与多颗卫星。", "主要近距离探测来自 Voyager 2。"],
-    sources: [{ label: "NASA - Uranus", url: "assets/external/solarsystem.nasa.gov_planets_uranus_overview_" }],
-    audio: { url: "assets/external/photojournal.jpl.nasa.gov_archive_PIA23641.mp4", type: "related", note: "该天体暂无 NASA 公开直接音频，播放 Voyager 相关等离子体波音频。" },
+    sources: [{ label: "NASA - Uranus", url: ossAssetUrl("external/solarsystem.nasa.gov_planets_uranus_overview_") }],
+    audio: { url: ossAssetUrl("external/photojournal.jpl.nasa.gov_archive_PIA23641.mp4"), type: "related", note: "该天体暂无 NASA 公开直接音频，播放 Voyager 相关等离子体波音频。" },
   },
   {
     id: "neptune",
@@ -243,8 +244,8 @@ export const BODY_DEFINITIONS: BodyDefinition[] = [
     highlight: "八大行星中最远，拥有极端强风环境。",
     summary: "海王星是最远的已知大行星，拥有极强高空风速。",
     facts: ["大气中甲烷使其呈蓝色。", "风速可达太阳系前列。", "Voyager 2 于 1989 年飞掠海王星。"],
-    sources: [{ label: "NASA - Neptune", url: "assets/external/solarsystem.nasa.gov_planets_neptune_overview_" }],
-    audio: { url: "assets/external/photojournal.jpl.nasa.gov_archive_PIA23641.mp4", type: "related", note: "该天体暂无 NASA 公开直接音频，播放 Voyager 相关等离子体波音频。" },
+    sources: [{ label: "NASA - Neptune", url: ossAssetUrl("external/solarsystem.nasa.gov_planets_neptune_overview_") }],
+    audio: { url: ossAssetUrl("external/photojournal.jpl.nasa.gov_archive_PIA23641.mp4"), type: "related", note: "该天体暂无 NASA 公开直接音频，播放 Voyager 相关等离子体波音频。" },
   },
   {
     id: "moon",
@@ -260,8 +261,8 @@ export const BODY_DEFINITIONS: BodyDefinition[] = [
     highlight: "地球唯一天然卫星，长期潮汐锁定地球。",
     summary: "月球是地球唯一的天然卫星，与地球潮汐锁定。",
     facts: ["公转周期与自转周期接近，因此几乎总以同一面朝向地球。", "表面覆盖大量撞击坑。", "Apollo 任务实现了载人登月。"],
-    sources: [{ label: "NASA - Earth's Moon", url: "assets/external/solarsystem.nasa.gov_moons_earths-moon_overview_" }],
-    audio: { url: "assets/external/www.nasa.gov_wp-content_uploads_2023_03_solar-system-sounds-earth.wav", type: "related", note: "NASA 官方：Apollo 11 月面任务相关音频。" },
+    sources: [{ label: "NASA - Earth's Moon", url: ossAssetUrl("external/solarsystem.nasa.gov_moons_earths-moon_overview_") }],
+    audio: { url: ossAssetUrl("external/www.nasa.gov_wp-content_uploads_2023_03_solar-system-sounds-earth.wav"), type: "related", note: "NASA 官方：Apollo 11 月面任务相关音频。" },
   },
   {
     id: "europa",
@@ -277,8 +278,8 @@ export const BODY_DEFINITIONS: BodyDefinition[] = [
     highlight: "冰壳下可能存在全球海洋，是潜在宜居卫星代表。",
     summary: "木卫二表面以冰壳为主，是最受关注的潜在宜居卫星之一。",
     facts: ["冰壳下可能存在全球液态海洋。", "表面裂纹地形发育。", "NASA Europa Clipper 任务将深入研究其可居住性。"],
-    sources: [{ label: "NASA - Europa", url: "assets/external/solarsystem.nasa.gov_moons_jupiter-moons_europa_overview_" }],
-    audio: { url: "assets/external/photojournal.jpl.nasa.gov_archive_PIA24724.mp4", type: "related", note: "该天体暂无 NASA 公开直接音频，播放木星系统相关音频。" },
+    sources: [{ label: "NASA - Europa", url: ossAssetUrl("external/solarsystem.nasa.gov_moons_jupiter-moons_europa_overview_") }],
+    audio: { url: ossAssetUrl("external/photojournal.jpl.nasa.gov_archive_PIA24724.mp4"), type: "related", note: "该天体暂无 NASA 公开直接音频，播放木星系统相关音频。" },
   },
   {
     id: "titan",
@@ -294,8 +295,8 @@ export const BODY_DEFINITIONS: BodyDefinition[] = [
     highlight: "拥有浓厚大气与稳定甲烷湖海系统。",
     summary: "土卫六是土星最大卫星，拥有浓厚含氮大气与液态甲烷湖。",
     facts: ["大气压高于地球海平面。", "表面存在甲烷和乙烷循环。", "Cassini-Huygens 曾实现对 Titan 的详细探测。"],
-    sources: [{ label: "NASA - Titan", url: "assets/external/solarsystem.nasa.gov_moons_saturn-moons_titan_overview_" }],
-    audio: { url: "assets/external/photojournal.jpl.nasa.gov_archive_PIA07966.wav", type: "related", note: "该天体暂无 NASA 公开直接音频，播放土星系统相关音频。" },
+    sources: [{ label: "NASA - Titan", url: ossAssetUrl("external/solarsystem.nasa.gov_moons_saturn-moons_titan_overview_") }],
+    audio: { url: ossAssetUrl("external/photojournal.jpl.nasa.gov_archive_PIA07966.wav"), type: "related", note: "该天体暂无 NASA 公开直接音频，播放土星系统相关音频。" },
   },
   {
     id: "triton",
@@ -311,7 +312,7 @@ export const BODY_DEFINITIONS: BodyDefinition[] = [
     highlight: "逆行绕海王星运行，可能是被捕获天体。",
     summary: "海卫一是海王星最大卫星，逆行轨道表明其可能为被捕获天体。",
     facts: ["存在稀薄氮大气。", "观测到可能的低温喷流活动。", "目前近距离数据主要来自 Voyager 2。"],
-    sources: [{ label: "NASA - Triton", url: "assets/external/solarsystem.nasa.gov_moons_neptune-moons_triton_overview_" }],
-    audio: { url: "assets/external/photojournal.jpl.nasa.gov_archive_PIA23641.mp4", type: "related", note: "该天体暂无 NASA 公开直接音频，播放 Voyager 相关等离子体波音频。" },
+    sources: [{ label: "NASA - Triton", url: ossAssetUrl("external/solarsystem.nasa.gov_moons_neptune-moons_triton_overview_") }],
+    audio: { url: ossAssetUrl("external/photojournal.jpl.nasa.gov_archive_PIA23641.mp4"), type: "related", note: "该天体暂无 NASA 公开直接音频，播放 Voyager 相关等离子体波音频。" },
   },
 ];

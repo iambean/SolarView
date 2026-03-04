@@ -1,49 +1,49 @@
-import texSun from '@/assets/textures/sun.jpg';
-import texMercury from '@/assets/textures/mercury.jpg';
-import texVenus from '@/assets/textures/venus.jpg';
-import texEarth from '@/assets/textures/earth.jpg';
-import texMars from '@/assets/textures/mars.jpg';
-import texJupiter from '@/assets/textures/jupiter.jpg';
-import texSaturn from '@/assets/textures/saturn.jpg';
-import texSaturnRing from '@/assets/textures/saturn_ring.png';
-import texUranus from '@/assets/textures/uranus.jpg';
-import texNeptune from '@/assets/textures/neptune.jpg';
-import texMoon from '@/assets/textures/moon.jpg';
-import texTitan from '@/assets/textures/titan.png';
+import { ossAssetUrl } from './oss';
 
-import audioMarsRover from '@/assets/audio/nasa_psd_mars_rover_self_noise.wav';
-import audioMarsFiltered from '@/assets/audio/nasa_psd_mars_filtered.wav';
-import audioCassiniRadio from '@/assets/audio/nasa_psd_cassini_radio.mp4';
+function externalAssetUrl(fileName: string): string {
+  return ossAssetUrl(`external/${fileName}`);
+}
 
 export const textureAssetMap: Record<string, string> = {
-  sun: texSun,
-  mercury: texMercury,
-  venus: texVenus,
-  earth: texEarth,
-  mars: texMars,
-  jupiter: texJupiter,
-  saturn: texSaturn,
-  saturnRing: texSaturnRing,
-  uranus: texUranus,
-  neptune: texNeptune,
-  moon: texMoon,
-  titan: texTitan,
+  sun: ossAssetUrl('textures/sun.jpg'),
+  mercury: ossAssetUrl('textures/mercury.jpg'),
+  venus: ossAssetUrl('textures/venus.jpg'),
+  earth: ossAssetUrl('textures/earth.jpg'),
+  mars: ossAssetUrl('textures/mars.jpg'),
+  jupiter: ossAssetUrl('textures/jupiter.jpg'),
+  saturn: ossAssetUrl('textures/saturn.jpg'),
+  saturnRing: ossAssetUrl('textures/saturn_ring.png'),
+  uranus: ossAssetUrl('textures/uranus.jpg'),
+  neptune: ossAssetUrl('textures/neptune.jpg'),
+  moon: ossAssetUrl('textures/moon.jpg'),
+  titan: ossAssetUrl('textures/titan.png'),
 };
+
+const audioMarsRover = externalAssetUrl('nasa_psd_mars_rover_self_noise.wav');
+const audioMarsFiltered = externalAssetUrl('nasa_psd_mars_filtered.wav');
+const audioCassiniRadio = externalAssetUrl('nasa_psd_cassini_radio.mp4');
 
 export const audioFallbacks: string[] = [audioMarsRover, audioMarsFiltered, audioCassiniRadio];
 
-const brokenToPlayableAudioMap: Record<string, string> = {
-  'assets/external/www.nasa.gov_wp-content_uploads_2023_03_solar-system-sounds-sun.wav': audioMarsFiltered,
-  'assets/external/www.nasa.gov_wp-content_uploads_2023_03_solar-system-sounds-earth.wav': audioMarsRover,
-  'assets/external/photojournal.jpl.nasa.gov_archive_PIA07966.wav': audioCassiniRadio,
-  'assets/external/photojournal.jpl.nasa.gov_archive_PIA23729.mp3': audioMarsRover,
-  'assets/external/photojournal.jpl.nasa.gov_archive_PIA24724.mp4': audioCassiniRadio,
-  'assets/external/photojournal.jpl.nasa.gov_archive_PIA23641.mp4': audioCassiniRadio,
-};
+const brokenAudioFallbackPairs: Array<[string, string]> = [
+  ['www.nasa.gov_wp-content_uploads_2023_03_solar-system-sounds-sun.wav', audioMarsFiltered],
+  ['www.nasa.gov_wp-content_uploads_2023_03_solar-system-sounds-earth.wav', audioMarsRover],
+  ['photojournal.jpl.nasa.gov_archive_PIA07966.wav', audioCassiniRadio],
+  ['photojournal.jpl.nasa.gov_archive_PIA23729.mp3', audioMarsRover],
+  ['photojournal.jpl.nasa.gov_archive_PIA24724.mp4', audioCassiniRadio],
+  ['photojournal.jpl.nasa.gov_archive_PIA23641.mp4', audioCassiniRadio],
+];
+
+const brokenToPlayableAudioMap = brokenAudioFallbackPairs.reduce<Record<string, string>>((map, [fileName, fallback]) => {
+  map[`assets/external/${fileName}`] = fallback;
+  map[externalAssetUrl(fileName)] = fallback;
+  return map;
+}, {});
 
 export function resolveAudioUrl(rawUrl: string | undefined): string | undefined {
   if (!rawUrl) return undefined;
-  return brokenToPlayableAudioMap[rawUrl] || rawUrl;
+  const normalized = rawUrl.startsWith('assets/') ? ossAssetUrl(rawUrl.slice('assets/'.length)) : rawUrl;
+  return brokenToPlayableAudioMap[rawUrl] || brokenToPlayableAudioMap[normalized] || normalized;
 }
 
 export function isTouchLikePlatform(): boolean {
